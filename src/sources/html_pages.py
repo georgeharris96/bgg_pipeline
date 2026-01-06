@@ -29,7 +29,7 @@ class HTMLPages:
         self.user_agent = user_agent
         self.limiter = RateLimiter(delay_s=delay_s)
 
-    def fetch_ranking_page(self, page: int) -> str:
+    def fetch_ranking_page(self, page: int) -> str | None:
         """Fetches a single ranking page from BoardGameGeek.
 
         Args:
