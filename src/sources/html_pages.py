@@ -1,6 +1,9 @@
 # src/sources/html_pages.py
 import httpx
+from utils.logging_config import setup_logging
 from utils.throttler import RateLimiter
+
+logger = setup_logging()
 
 class HTMLPages:
     """Fetches HTML ranking pages without parsing the HTML.
@@ -44,7 +47,7 @@ class HTMLPages:
         if response.status_code == 200:
             return response.text
         else:
-            pass # TODO set up logging for this!
+            logger.warning(f"The following URL failed to return status code 200: {url}")
 
     def fetch_ranking_pages(self, start:int, stop: int) -> list[str]:
         """Fetches multiple ranking pages from BoardGameGeek.
