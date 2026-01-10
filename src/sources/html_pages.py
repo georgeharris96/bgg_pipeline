@@ -65,7 +65,7 @@ class HTMLPages:
         return html_pages
     
     @staticmethod
-    def save_html_file(self, file_name: str, html_content: str, save_location:str = "data/raw_html"):
+    def save_html_file(file_name: str, html_content: str, save_location:str = "data/raw_html"):
         """A static method to save a HTML file to a location
         
         Args:
