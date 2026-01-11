@@ -54,6 +54,8 @@ class GameStatistics(BaseModel):
     def validate_year_published(cls, value):
         if value > datetime.now().year:
             raise ValueError(f"year_published must be greater than {datetime.now().year}")
+        if value <= 0:
+            raise ValueError("year_published must be a positive integer")
         return value
     
 
@@ -71,7 +73,7 @@ class GameStatistics(BaseModel):
         return value
     
 
-    @field_validator("suggested_num_players")
+    @field_validator("suggested_num_player")
     def validate_suggested_num_players(cls, value):
         if value <= 0:
             raise ValueError("suggestd_num_players must be a positive integer")
