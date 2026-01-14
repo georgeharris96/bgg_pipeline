@@ -1,5 +1,8 @@
 [project]
 name = "bgg-pipeline"
+packages = [
+    { include = "src" },
+]
 version = "0.1.0"
 description = ""
 authors = [
