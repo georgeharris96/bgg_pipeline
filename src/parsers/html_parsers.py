@@ -17,7 +17,7 @@ def extract_game_ids_and_names(soup: BeautifulSoup) -> list[tuple[int, str]]:
     """
     a_tags = soup.find_all("a", class_="primary")
     game_ids_and_names = []
-    if a_tags is None:
+    if len(a_tags) == 0:
         raise ValueError("HTML content has no a tags with class=primary")
     else:
         for tag in a_tags:
@@ -42,7 +42,7 @@ def extract_game_ranks(soup: BeautifulSoup) -> list[int]:
     """
     td_tags = soup.find_all("td", class_="collection_rank")
     game_ranks = []
-    if td_tags is None:
+    if len(td_tags) == 0:
         raise ValueError("HTML content has no td tags with class=primary")
     else:
         for tag in td_tags:
@@ -96,7 +96,6 @@ def get_html_last_page_number(html_content:str) -> int | None:
         raise ValueError("Could not find the last page number in the HTML content")
     else:
         page_number_as_str = last_page_link.text
-        logger.error("Could not find the last page number in the HTML content")
         page_number = int(page_number_as_str[1:-1])
         return page_number
 
