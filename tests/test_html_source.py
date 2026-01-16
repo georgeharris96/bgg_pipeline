@@ -1,5 +1,6 @@
 # tests/test_html_source.py
 import pytest
+import logging
 import httpx
 from unittest.mock import patch, mock_open
 from src.sources.html_pages import HTMLPages
@@ -27,8 +28,17 @@ def test_fetch_ranking_page_type():
         output = html_pages.fetch_ranking_page(page=1)
         assert type(output) == str
     
-# TODO test logging on a non 200 status code request
 
+def test_fetch_ranking_page_on_non_200_status_code(caplog):
+    caplog.set_level(logging.ERROR)
+    html_pages = HTMLPages(delay_s=0.0)
+
+    with patch("httpx.get") as mock_get:
+        mock_response = httpx.Response(404, text="Not Found")
+        mock_get.return_value = mock_response
+
+        output = html_pages.fetch_ranking_page(page=1)
+        assert "The following URL failed to return status code 200:" in caplog.text
 
 # ------------ Testing test_fetch_ranking_page ------------
 def test_fetch_ranking_pages_type():
@@ -54,8 +64,16 @@ def test_fetch_ranking_pages_output():
         output = html_pages.fetch_ranking_pages(start=1, stop=2)
         assert output == correct_output
 
-# TODO test logging on a non 200 status code request
 
+def test_fetch_ranking_pages_error_handling(caplog):
+    html_pages = HTMLPages(delay_s=0.0)
+
+    with patch("httpx.get") as mock_get:
+        mock_response = httpx.Response(404, text="Not Found")
+        mock_get.return_value = mock_response
+
+        output = html_pages.fetch_ranking_pages(start=1, stop=2)
+        assert "The following URL failed to return status code 200:" in caplog.text
 
 # ------------ Testing save_html_file ------------
 def test_save_html_file():

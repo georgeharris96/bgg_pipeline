@@ -44,10 +44,10 @@ class HTMLPages:
         url = f"{self.base_url}/browse/boardgame/page/{page}"
         self.limiter.wait()
         response = httpx.get(url)
-        if response.status_code == 200:
-            return response.text
+        if response.status_code != 200:
+            logger.error(f"The following URL failed to return status code 200: {url}")
         else:
-            logger.warning(f"The following URL failed to return status code 200: {url}")
+            return response.text
 
     def fetch_ranking_pages(self, start:int, stop: int) -> list[str]:
         """Fetches multiple ranking pages from BoardGameGeek.
