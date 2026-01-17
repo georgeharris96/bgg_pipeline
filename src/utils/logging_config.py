@@ -10,5 +10,9 @@ def setup_logging():
             logging.StreamHandler()
         ]
     )
+    
+    # Set the logging level for httpx to WARNING
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    
     return logging.getLogger(__name__)
 
