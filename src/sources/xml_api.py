@@ -45,11 +45,11 @@ class XMLAPI:
             stats (bool, optional): A flag used to mark your desire to gather the 
                 stats of the boardgame. Defaults to False. 
         """
-        contents = [f"thing?={boardgame_id}"]
+        contents = [self.base_url, f"thing?={boardgame_id}"]
         if stats:
             contents.append("&stats=1")
 
-        self.next_request_url: str = self.base_url.join(contents)
+        self.next_request_url: str = "".join(contents)
 
 
     def get_request(self) -> str | None:

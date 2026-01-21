@@ -19,7 +19,7 @@ def test_request_url_creation():
     xml_api.create_request(
         boardgame_id=456,
     )
-    assert xml_api.next_request_url == f"{base_bgg_api_url}thing?456"
+    assert xml_api.next_request_url == f"{base_bgg_api_url}thing?=456"
 
 
 # ------------ Testing getting requests from the api ------------
