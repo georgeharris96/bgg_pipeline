@@ -15,10 +15,10 @@ class Game(Base):
     def __repr__(self):
         return f"<Game(id={self.id}, name='{self.name}')"
 
-def Statistics(Base):
+class Statistics(Base):
     __tablename__ = "Statistics"
 
-    id = Column(Integer, ForeignKey("Game.id"))
+    id = Column(Integer, ForeignKey("Game.id"), primary_key=True)
     description = Column(String)
     year_published = Column(Integer)
     min_players = Column(Integer)
