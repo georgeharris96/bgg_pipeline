@@ -18,11 +18,11 @@ def extract_description(soup: BeautifulSoup) -> str:
     Returns:
         str: The description text, or None if not found or if there's an error in extraction.
     """
-    description_tag = soup.find_all("description")
+    description_tag = soup.find("description")
     if description_tag is None:
         raise ValueError("Description tag cannot be found!")
-    
-    value = description_tag.value
+
+    value = description_tag.get("value")
     if isinstance(value, str):
         return value
     else:
@@ -44,8 +44,8 @@ def extract_year_published(soup: BeautifulSoup) -> int:
 
     if year_published_tag is None:
         raise ValueError("Year Published tag cannot be found!")
-    
-    value = year_published_tag.value
+
+    value = year_published_tag.get("value")
     if isinstance(value, str) and bool(re.match(r"^[0-9]+$", value)):
         return int(value)
     else:
@@ -66,8 +66,8 @@ def extract_min_players(soup: BeautifulSoup) -> int:
 
     if min_players_tag is None:
         raise ValueError("Min Players tag cannot be found!")
-    
-    value = min_players_tag.value
+
+    value = min_players_tag.get("value")
     if isinstance(value, str) and bool(re.match(r"^[0-9]+$", value)):
         return int(value)
     else:
@@ -88,8 +88,8 @@ def extract_max_players(soup: BeautifulSoup) -> int:
 
     if max_players_tag is None:
         raise ValueError("Max Players tag cannot be found!")
-    
-    value = max_players_tag.value
+
+    value = max_players_tag.get("value")
     if isinstance(value, str) and bool(re.match(r"^[0-9]+$", value)):
         return int(value)
     else:
@@ -154,11 +154,11 @@ def extract_min_age(soup: BeautifulSoup) -> int:
         int: The minimum age recommendation, or None if not found or if there's an error in extraction.
     """
     min_age_tag = soup.find("minage")
-    
+
     if min_age_tag is None:
         raise ValueError("Min Age tag cannot be found!")
-    
-    value = min_age_tag.value
+
+    value = min_age_tag.get("value")
     if isinstance(value, str) and re.match(r"^[0-9]+$", value):
         return int(value)
     else:
@@ -179,9 +179,9 @@ def extract_average_rating(soup: BeautifulSoup) -> float:
 
     if average_rating_tag is None:
         raise ValueError("Average Rating tag cannot be found!")
-    
-    value = average_rating_tag.value
-    if isinstance(value, str) and re.match(r"^[0-9]+$", value):
+
+    value = average_rating_tag.get("value")
+    if isinstance(value, str) and re.match(r"^[0-9]+(\.[0-9]+)?$", value):
         return float(value)
     else:
         raise ValueError(f"Average Rating value is invalid: {value}")
@@ -198,12 +198,12 @@ def extract_average_weight(soup: BeautifulSoup) -> float:
         float: The average weight, or None if not found or if there's an error in extraction.
     """
     average_weight_tag = soup.find("averageweight")
-    
+
     if average_weight_tag is None:
         raise ValueError("Average Weight tag cannot be found!")
-    
-    value = average_weight_tag.value
-    if isinstance(value, str) and re.match(r"^[0-9]+$", value):
+
+    value = average_weight_tag.get("value")
+    if isinstance(value, str) and re.match(r"^[0-9]+(\.[0-9]+)?$", value):
         return float(value)
     else:
         raise ValueError(f"Average Weight value is invalid: {value}")
