@@ -142,4 +142,10 @@ data/
 logs/
 *.db
 
+# Authorisation codes
+bgg_auth.txt
+
+# other files
+**/.DS_Store
+
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Python

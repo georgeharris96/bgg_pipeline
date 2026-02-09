@@ -1,4 +1,4 @@
-# tests/test_parsers.py
+# tests/test_html_parser.py
 from src.parsers.html_parsers import (
     extract_game_ids_and_names, 
     extract_game_ranks, 
