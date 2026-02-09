@@ -31,3 +31,11 @@ class Statistics(Base):
     def __repr__(self):
         return f"<Statistics object for boardgame of id {self.id}>"
 
+class Mechanics(Base):
+    __tablename__ = "Mechanics"
+
+    id = Column(Integer, ForeignKey("Games.id"), primary_key=True),
+    mechanic = Column(String)
+
+    def __repr__(self):
+        return f"<boardgame of id: {self.id} has the mechanic: {self.mechanic}>"

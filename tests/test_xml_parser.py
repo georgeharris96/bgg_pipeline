@@ -1,5 +1,5 @@
 # tests/test_xml_parser.py
-from src.parsers.xml_parsers import (
+from parsers.xml_parsers import (
     extract_description,
     extract_year_published,
     extract_min_players,
@@ -8,9 +8,10 @@ from src.parsers.xml_parsers import (
     extract_min_age,
     extract_average_rating,
     extract_average_weight,
-    parse_xml_page,
+    parse_xml_page_for_statistics,
+    parse_xml_page_for_game_mechanics,
 )
-from src.schemas import GameStatistics
+from schemas import GameStatistics, GameMechanic
 from bs4 import BeautifulSoup
 import pytest
 import logging
@@ -98,6 +99,26 @@ xml_content_missing_poll = """
     <boardgame objectid="174430">
         <poll name="other_poll" title="Other Poll">
         </poll>
+    </boardgame>
+</boardgames>
+"""
+
+xml_content_with_mechanics = """
+<?xml version="1.0" encoding="utf-8"?>
+<boardgames>
+    <boardgame objectid="174430">
+        <boardgamemechanic value="Hand Management" />
+        <boardgamemechanic value="Card Drafting" />
+        <boardgamemechanic value="Variable Player Powers" />
+    </boardgame>
+</boardgames>
+"""
+
+xml_content_no_mechanics = """
+<?xml version="1.0" encoding="utf-8"?>
+<boardgames>
+    <boardgame objectid="174430">
+        <description value="A game with no mechanics listed." />
     </boardgame>
 </boardgames>
 """
@@ -262,13 +283,13 @@ def test_extract_average_weight_missing_tag():
 
 # ------------ Testing parse_xml_page ------------
 def test_parse_xml_page_type():
-    output = parse_xml_page(xml_content=valid_mock_xml_content, boardgame_id=174430)
+    output = parse_xml_page_for_statistics(xml_content=valid_mock_xml_content, boardgame_id=174430)
     assert output is not None
     assert isinstance(output, GameStatistics)
 
 
 def test_parse_xml_page_output():
-    output = parse_xml_page(xml_content=valid_mock_xml_content, boardgame_id=174430)
+    output = parse_xml_page_for_statistics(xml_content=valid_mock_xml_content, boardgame_id=174430)
     assert output is not None
     assert output.id == 174430
     assert output.description == "A strategic board game about building civilizations."
@@ -283,17 +304,46 @@ def test_parse_xml_page_output():
 
 def test_parse_xml_page_invalid_xml():
     malformed_xml = "<invalid><xml>content"
-    output = parse_xml_page(xml_content=malformed_xml, boardgame_id=999999)
+    output = parse_xml_page_for_statistics(xml_content=malformed_xml, boardgame_id=999999)
     assert output is None
 
 
 def test_parse_xml_page_missing_required_fields():
-    output = parse_xml_page(xml_content=invalid_mock_xml_content, boardgame_id=999999)
+    output = parse_xml_page_for_statistics(xml_content=invalid_mock_xml_content, boardgame_id=999999)
     assert output is None
 
 
 def test_parse_xml_page_logging(caplog):
     caplog.set_level(logging.ERROR)
-    output = parse_xml_page(xml_content=invalid_mock_xml_content, boardgame_id=999999)
+    output = parse_xml_page_for_statistics(xml_content=invalid_mock_xml_content, boardgame_id=999999)
     assert output is None
     assert "ValueError for boardgame id = 999999" in caplog.text
+
+
+# ------------ Testing parse_xml_page_for_game_mechanics ------------
+def test_parse_xml_page_for_game_mechanics_type():
+    output = parse_xml_page_for_game_mechanics(xml_content=xml_content_with_mechanics, boardgame_id=174430)
+    assert isinstance(output, list)
+    assert all(isinstance(m, GameMechanic) for m in output)
+
+
+def test_parse_xml_page_for_game_mechanics_output():
+    output = parse_xml_page_for_game_mechanics(xml_content=xml_content_with_mechanics, boardgame_id=174430)
+    assert output is not None
+    assert len(output) == 3
+    assert output[0].id == 174430
+    assert output[0].mechanic_name == "Hand Management"
+    assert output[1].mechanic_name == "Card Drafting"
+    assert output[2].mechanic_name == "Variable Player Powers"
+
+
+def test_parse_xml_page_for_game_mechanics_no_mechanics():
+    output = parse_xml_page_for_game_mechanics(xml_content=xml_content_no_mechanics, boardgame_id=174430)
+    assert isinstance(output, list)
+    assert len(output) == 0
+
+
+def test_parse_xml_page_for_game_mechanics_invalid_xml():
+    malformed_xml = "<invalid><xml>content"
+    output = parse_xml_page_for_game_mechanics(xml_content=malformed_xml, boardgame_id=999999)
+    assert output == []

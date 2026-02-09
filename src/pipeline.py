@@ -1,13 +1,15 @@
 # src/pipeline.py
 from database import bulk_import_into_database, get_db_session
-from models import Game, Statistics
-from schemas import GameRankCreate, GameStatistics
+from models import Game, Statistics, Mechanics
+from schemas import GameRankCreate, GameStatistics, GameMechanic
 from sources.html_pages import HTMLPages
 from sources.xml_api import XMLAPI
 from parsers.html_parsers import parse_html_ranking_page, get_html_last_page_number
-from parsers.xml_parsers import parse_xml_page
+from parsers.xml_parsers import parse_xml_page_for_statistics, parse_xml_page_for_game_mechanics
 from utils.logging_config import setup_logging
 from itertools import chain
+from glob import glob
+from pathlib import Path
 
 
 logger = setup_logging()
@@ -83,10 +85,14 @@ def gather_statistics_from_ids(boardgame_ids: list[int]) -> list[GameStatistics]
         else:
             # ... if found, parse the information
             boardgame_statistics.append(
-                parse_xml_page(
+                parse_xml_page_for_statistics(
                     xml_content=xml_page, boardgame_id=id
                     )
             )
+            bgg_api.save_xml_file(
+                file_name=f"{id}.xml",
+                xml_content=xml_page,
+                ) # Save the xml file for later to save request allocation and to be considerate of BGG
 
     return boardgame_statistics
 
@@ -127,6 +133,31 @@ def collect_and_store_statistics(db, boardgame_ids: list[int]) -> None:
     )
 
 
+def collect_and_store_mechanics(db) -> None:
+    """
+    Reads saved XML files from disk, extracts game mechanics from each, and stores them in the database.
+    """
+    logger.info("STARTING TO COLLECT AND STORE GAME MECHANICS")
+    xml_file_names = glob("data/raw_xml/*.xml")
+    all_game_mechanics: list[GameMechanic] = []
+
+    for file_name in xml_file_names:
+        with open(file_name, "r") as file:
+            game_mechanics = parse_xml_page_for_game_mechanics(
+                boardgame_id=int(Path(file_name).stem),
+                xml_content=file.read(),
+            )
+            if game_mechanics is not None:
+                all_game_mechanics.extend(game_mechanics)
+
+    logger.info("INSERTING GAME MECHANICS INTO DB")
+    bulk_import_into_database(
+        database_session=db,
+        table=Mechanics,
+        data_to_import=all_game_mechanics,
+    )
+
+
 def main_pipeline() -> None:
     """
     The main pipeline for collecting BGG boardgame names, ranks and statistics.
@@ -137,6 +168,8 @@ def main_pipeline() -> None:
         game_ranks = collect_and_store_game_ranks(db)
         boardgame_ids = [game.id for game in game_ranks]
         collect_and_store_statistics(db, boardgame_ids)
+        collect_and_store_mechanics(db)
+    logger.info("THE PIPELINE HAS FINISHED RUNNING")
 
 
 if __name__ == "__main__":

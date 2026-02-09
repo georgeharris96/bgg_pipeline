@@ -1,7 +1,7 @@
 # src/parsers/xml_parsers.py
 import re
 from bs4 import BeautifulSoup
-from schemas import GameStatistics
+from schemas import GameStatistics, GameMechanic
 from utils.logging_config import setup_logging
 
 
@@ -217,7 +217,7 @@ def extract_average_weight(soup: BeautifulSoup) -> float:
     return _extract_float_value(soup, "averageweight", "Average Weight")
 
 
-def parse_xml_page(xml_content: str, boardgame_id: int) -> GameStatistics | None:
+def parse_xml_page_for_statistics(xml_content: str, boardgame_id: int) -> GameStatistics | None:
     """
     Parses the XML content to extract board game statistics.
 
@@ -256,4 +256,28 @@ def parse_xml_page(xml_content: str, boardgame_id: int) -> GameStatistics | None
     except Exception as e:
         logger.error(f"Unexpected error for boardgame id = {boardgame_id}: {e}")
         return None
+
+
+def parse_xml_page_for_game_mechanics(xml_content: str, boardgame_id: int) -> list[GameMechanic] | None:
+    try:
+        soup = BeautifulSoup(xml_content, "xml")
+    except Exception as e:
+        logger.error(f"Failed to parse XML content for boardgame id = {boardgame_id}: {e}")
+        return None
     
+    # Find all the mechanics
+    mechanic_tags = soup.find_all("boardgamemechanic")
+
+    if mechanic_tags is None:
+        logger.warning(f"Boardgame id = {boardgame_id} has no mechanics")
+        return None
+    
+    else:
+        game_mechanics = []
+        for tag in mechanic_tags:
+            tag_value = tag.get("value")
+            if isinstance(tag_value, str):
+                game_mechanics.append(GameMechanic(id=boardgame_id, mechanic_name=tag_value))
+            else:
+                pass
+        return game_mechanics
