@@ -1,5 +1,5 @@
 # src/pipeline.py
-from database import engine, Base, SessionLocal
+from database import bulk_import_into_database, get_db_session
 from models import Game, Statistics
 from schemas import GameRankCreate, GameStatistics
 from sources.html_pages import HTMLPages
@@ -84,67 +84,52 @@ def gather_statistics_from_ids(boardgame_ids: list[int]) -> list[GameStatistics]
     return boardgame_statistics
 
 
-def main_pipeline() -> None:
+def collect_and_store_game_ranks(db) -> list[GameRankCreate]:
     """
-    The main pipeline for collecting BGG boardgame names, ranks and statistics. 
-    
-    This function creates the sqlite database, collects game ids, names and ranks
+    Gathers game ids, names and ranks from BGG HTML pages and stores them in the database.
 
-    This function outputs a sqlite database in the 
+    Returns:
+        collected_game_ids_names_ranks (list[GameRankCreate]): The collected game data, for extracting IDs for the next phase.
     """
-
-    # Initialise the database
-    Base.metadata.create_all(bind=engine)
-
-    # Collect and process game ids, names and ranks
     logger.info("STARTING TO GATHER GAME IDS, NAMES AND RANKS")
     collected_game_ids_names_ranks = gather_game_id_names_ranks_from_html_pages()
     logger.info("COMPLETED GATHERING GAME IDS, NAMES AND RANKS")
 
-    # Create db local session
-    logger.info("GETTING LOCAL DB SESSION")
-    db = SessionLocal()
+    logger.info("INSERTING GAME IDS, NAMES AND RANKS INTO DB")
+    bulk_import_into_database(
+        database_session=db,
+        table=Game,
+        data_to_import=collected_game_ids_names_ranks
+    )
 
-    # Try to insert game ids, names and ranks into db...
-    try:
-        logger.info("INSERTING GAME IDS, NAMES AND RANKS INTO DB")
-        db.bulk_insert_mappings(
-            Game, # type: ignore
-            [game_object.model_dump() for game_object in collected_game_ids_names_ranks]
-        )
-        logger.info("COMMITING GAME IDS, NAMES AND RANKS TO DB")
-        db.commit()
-    # If there is an error... Log the error, rollback, close the db and raise the error.
-    except Exception as e:
-        db.rollback()
-        logger.error(f"BULK INSERT OF GAME IDS, NAMES AND RANKS FAILED WITH FOLLOWING ERROR: \n{e}")
-        raise e
+    return collected_game_ids_names_ranks
 
-    # Collect and process game statistics
-    boardgame_ids = [game_object.id for game_object in collected_game_ids_names_ranks]
+
+def collect_and_store_statistics(db, boardgame_ids: list[int]) -> None:
+    """
+    Gathers statistics for each game from the BGG XML API and stores them in the database.
+    """
     logger.info("STARTING TO GATHER XML DOCUMENTS")
-    boardgame_statistics = gather_statistics_from_ids(
-        boardgame_ids=boardgame_ids
-        )
-    
-    # Try to insert game statistics into db..
-    try:
-        logger.info("INSERTING GAME STATISTICS INTO DB")
-        db.bulk_insert_mappings(
-            Statistics, # type: ignore
-            [stats_object.model_dump() for stats_object in boardgame_statistics]
-        )
-        logger.info("COMMITING STATS TO DB")
-        db.commit()
-    # If there is an error... Log the error, rollback, close the db and raise the error.
-    except Exception as e:
-        db.rollback()
-        logger.error(f"BULK INSERT OF GAME STATISTICS FAILED WITH THE FOLLOWING ERROR: \n {e}")
-        raise e
+    boardgame_statistics = gather_statistics_from_ids(boardgame_ids=boardgame_ids)
 
-    # Finally close the database session
-    finally:
-        db.close()
+    logger.info("INSERTING GAME STATISTICS INTO DB")
+    bulk_import_into_database(
+        database_session=db,
+        table=Statistics,
+        data_to_import=boardgame_statistics
+    )
+
+
+def main_pipeline() -> None:
+    """
+    The main pipeline for collecting BGG boardgame names, ranks and statistics.
+
+    Outputs a sqlite database in the data/ directory.
+    """
+    with get_db_session() as db:
+        game_ranks = collect_and_store_game_ranks(db)
+        boardgame_ids = [game.id for game in game_ranks]
+        collect_and_store_statistics(db, boardgame_ids)
 
 
 if __name__ == "__main__":
