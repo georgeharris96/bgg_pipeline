@@ -1,6 +1,7 @@
 # src/schemas.py
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict, field_validator, model_validator
+from typing import Self
 
 
 class GameRankCreate(BaseModel):
