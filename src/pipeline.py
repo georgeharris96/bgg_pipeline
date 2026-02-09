@@ -23,14 +23,18 @@ def gather_game_id_names_ranks_from_html_pages() -> list[GameRankCreate]:
     html_pages = HTMLPages()
     page_1 = html_pages.fetch_ranking_page(page=1)
 
+    # Checks if page one has been found and if not... 
     if page_1 == None:
+        # ...log that it has happend and raise a ValueError!
         logger.error("PAGE 1 HAS NOT BEEN FETCHED CORRECTLY!")
         raise ValueError("Page 1 has not been fetched correctly!")
     
     else:
         max_page_number = get_html_last_page_number(page_1)
 
+        # Checks if the max page number has been found....
         if max_page_number != None:
+            # ... if it has then fetch the remaining ranking pages and start processing them
             collected_pages = html_pages.fetch_ranking_pages(start=2, stop=max_page_number)
             collected_pages.insert(0, page_1)
 
@@ -44,6 +48,7 @@ def gather_game_id_names_ranks_from_html_pages() -> list[GameRankCreate]:
 
             return collected_game_ids_names_ranks
         else:
+            # ... if not then log the error and raise a ValueError
             logger.error("COUILD NOT FIND A MAX PAGE NUMBER FROM PAGE 1!")
             raise ValueError("Could not find a max page number from page 1!")
 
@@ -70,11 +75,13 @@ def gather_statistics_from_ids(boardgame_ids: list[int]) -> list[GameStatistics]
         # Get XML
         xml_page = bgg_api.get_request()
 
+        # Check if the xml page has been retrieved correctly...
         if xml_page is None:
+            # ...and if not log a warning to inform the user.
             logger.warning(f"Failed to get xml_page for boardgame id: {id} \n moving on")
 
         else:
-            # Parse infomation
+            # ... if found, parse the information
             boardgame_statistics.append(
                 parse_xml_page(
                     xml_content=xml_page, boardgame_id=id

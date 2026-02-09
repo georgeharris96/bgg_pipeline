@@ -21,6 +21,13 @@ Base.metadata.create_all(bind=engine)
 
 
 def bulk_import_into_database(database_session: Session, table: type[Base], data_to_import: Sequence[BaseModel]) -> None:
+    """Bulk inserts pydantic model data into a database table.
+
+    Args:
+        database_session: An active SQLAlchemy session.
+        table: The SQLAlchemy model class to insert into.
+        data_to_import: A sequence of pydantic models to insert.
+    """
     database_session.bulk_insert_mappings(
         table, # type: ignore
         [game_object.model_dump() for game_object in data_to_import]
@@ -29,12 +36,21 @@ def bulk_import_into_database(database_session: Session, table: type[Base], data
 
 @contextmanager
 def get_db_session():
+    """Provides a transactional database session as a context manager.
+
+    Yields:
+        Session: An active SQLAlchemy session.
+
+    Raises:
+        Exception: Re-raises any exception after rolling back the session and logging the error.
+    """
     db = SessionLocal()
     try:
         yield db
         db.commit()
-    except Exception:
+    except Exception as e:
         db.rollback()
+        logger.error(f"DATABASE SESSION ERROR: {e}")
         raise
     finally:
         db.close()
