@@ -15,15 +15,15 @@ class GameRankCreate(BaseModel):
 
 
     @field_validator("rank")
-    def validate_rank(cls, value):
+    def validate_rank(cls, value) -> None:
         if value <= 0:
             raise ValueError("Rank must be a positive integer")
         return value
     
     @field_validator("id")
-    def validate_id(cls, value):
+    def validate_id(cls, value) -> None:
         if value <= 0:
-            raise ValueError("id must be a postive integer")
+            raise ValueError("id must be a positive integer")
         return value
 
 
@@ -44,14 +44,14 @@ class GameStatistics(BaseModel):
     average_weight: float
 
     @field_validator("id")
-    def validate_id(cls, value):
+    def validate_id(cls, value) -> None:
         if value <= 0:
-            raise ValueError("id must be a postive integer")
+            raise ValueError("id must be a positive integer")
         return value
     
 
     @field_validator("year_published")
-    def validate_year_published(cls, value):
+    def validate_year_published(cls, value) -> None:
         if value > datetime.now().year:
             raise ValueError(f"year_published must be greater than {datetime.now().year}")
         if value <= 0:
@@ -60,49 +60,49 @@ class GameStatistics(BaseModel):
     
 
     @field_validator("min_players")
-    def validate_min_players(cls, value):
+    def validate_min_players(cls, value) -> None:
         if value <= 0:
-            raise ValueError("min_players must be a postive integer")
+            raise ValueError("min_players must be a positive integer")
         return value
     
 
     @field_validator("max_players")
-    def validate_max_players(cls, value):
+    def validate_max_players(cls, value) -> None:
         if value <= 0:
             raise ValueError("max_players must be a positive integer")
         return value
     
 
     @field_validator("suggested_num_player")
-    def validate_suggested_num_players(cls, value):
+    def validate_suggested_num_players(cls, value) -> None:
         if value <= 0:
             raise ValueError("suggestd_num_players must be a positive integer")
         return value
 
 
     @field_validator("min_age")
-    def validate_min_age(cls, value):
+    def validate_min_age(cls, value) -> None:
         if value <= 0:
-            raise ValueError("min_age must be a postive integer")
+            raise ValueError("min_age must be a positive integer")
         return value
     
 
     @field_validator("average_rating")
-    def validate_average_rating(cls, value):
+    def validate_average_rating(cls, value) -> None:
         if value < 0:
             raise ValueError("average_rating cannot be negative")
         return value
 
 
     @field_validator("average_weight")
-    def validate_average_weight(cls, value):
+    def validate_average_weight(cls, value) -> None:
         if value < 0:
             raise ValueError("average_weight cannot be negative")
         return value
     
 
     @model_validator(mode="after")
-    def validate_players(self):
+    def validate_players(self) -> Self:
         if self.max_players < self.min_players:
             raise ValueError("max_players must be greater than or equal to min_players")
         return self
@@ -118,7 +118,7 @@ class GameMechanic(BaseModel):
     mechanic_name: str
 
     @field_validator("id")
-    def validate_id(cls, value):
+    def validate_id(cls, value) -> None:
         if value <= 0:
             raise ValueError("id must be a positive integer")
         return value

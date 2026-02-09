@@ -1,7 +1,7 @@
 # src/parsers/xml_parsers.py
 import re
 from bs4 import BeautifulSoup
-from src.schemas import GameStatistics
+from schemas import GameStatistics
 from utils.logging_config import setup_logging
 
 
@@ -248,5 +248,4 @@ def parse_xml_page(xml_content: str, boardgame_id: int) -> GameStatistics | None
     except Exception as e:
         logger.error(f"Unexpected error for boardgame id = {boardgame_id}: {e}")
         return None
-    
     

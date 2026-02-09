@@ -71,7 +71,7 @@ def gather_statistics_from_ids(boardgame_ids: list[int]) -> list[GameStatistics]
         xml_page = bgg_api.get_request()
 
         if xml_page is None:
-            logger.warning("Failed to get xml_page for boardgame id: {id} \n moving on")
+            logger.warning(f"Failed to get xml_page for boardgame id: {id} \n moving on")
 
         else:
             # Parse infomation
@@ -118,7 +118,6 @@ def main_pipeline() -> None:
     except Exception as e:
         db.rollback()
         logger.error(f"BULK INSERT OF GAME IDS, NAMES AND RANKS FAILED WITH FOLLOWING ERROR: \n{e}")
-        db.close()
         raise e
 
     # Collect and process game statistics
@@ -141,7 +140,6 @@ def main_pipeline() -> None:
     except Exception as e:
         db.rollback()
         logger.error(f"BULK INSERT OF GAME STATISTICS FAILED WITH THE FOLLOWING ERROR: \n {e}")
-        db.close()
         raise e
 
     # Finally close the database session

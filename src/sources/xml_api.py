@@ -71,7 +71,7 @@ class XMLAPI:
             else:
                 return response.text
         else:
-            raise ValueError("Please create a request before")
+            raise ValueError("Please create a request before trying to collect it.")
         
 
     @staticmethod
