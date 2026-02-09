@@ -1,12 +1,9 @@
 name: CI Pipeline
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
-      - main
+      - main  # Only run tests on PRs to main (saves GitHub Actions minutes)
 
 jobs:
   run-tests:
@@ -31,6 +28,6 @@ jobs:
         run: |
           poetry install
 
-      - name: Run Pyterst
+      - name: Run Pytest
         run: |
           poetry run pytest
