@@ -2,6 +2,7 @@
 import httpx
 from utils.logging_config import setup_logging
 from utils.throttler import RateLimiter
+from utils.make_requests import make_request
 
 logger = setup_logging()
 
@@ -42,8 +43,7 @@ class HTMLPages:
             str: The raw HTML content of the requested page.
         """
         url = f"{self.base_url}/browse/boardgame/page/{page}"
-        self.limiter.wait()
-        response = httpx.get(url)
+        response = make_request(self.limiter, url)
         if response.status_code != 200:
             logger.error(f"The following URL failed to return status code 200: {url}")
         else:

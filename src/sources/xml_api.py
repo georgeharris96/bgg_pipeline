@@ -3,6 +3,7 @@ import httpx
 from utils.logging_config import setup_logging
 from utils.throttler import RateLimiter
 from utils.api_auth import get_bgg_auth
+from utils.make_requests import make_request
 
 
 logger = setup_logging()
@@ -61,11 +62,7 @@ class XMLAPI:
                 create_request method it will fail.
         """
         if self.next_request_url != "":
-            headers = {
-                "Authorization": f"Bearer {get_bgg_auth()}"
-            }
-            self.limiter.wait()
-            response = httpx.get(self.next_request_url, headers=headers)
+            response = make_request(self.limiter, self.next_request_url, bearer_token=get_bgg_auth())
             if response.status_code != 200:
                 logger.error(f"The following URL failed: '{self.base_url}'\nwith status code: {response.status_code}")
             else:
