@@ -34,7 +34,7 @@ class Statistics(Base):
 class Mechanics(Base):
     __tablename__ = "Mechanics"
 
-    id = Column(Integer, ForeignKey("Games.id"), primary_key=True),
+    id = Column(Integer, ForeignKey("Games.id"), primary_key=True)
     mechanic = Column(String)
 
     def __repr__(self):

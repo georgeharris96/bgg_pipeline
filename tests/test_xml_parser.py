@@ -332,9 +332,9 @@ def test_parse_xml_page_for_game_mechanics_output():
     assert output is not None
     assert len(output) == 3
     assert output[0].id == 174430
-    assert output[0].mechanic_name == "Hand Management"
-    assert output[1].mechanic_name == "Card Drafting"
-    assert output[2].mechanic_name == "Variable Player Powers"
+    assert output[0].mechanic == "Hand Management"
+    assert output[1].mechanic == "Card Drafting"
+    assert output[2].mechanic == "Variable Player Powers"
 
 
 def test_parse_xml_page_for_game_mechanics_no_mechanics():

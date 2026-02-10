@@ -25,16 +25,16 @@ def test_invalid_GameRankCreate():
 
 # ------------ Testing GameMechanic ------------
 def test_valid_GameMechanic():
-    game_mechanic = GameMechanic(id=1, mechanic_name="Grid Movement")
+    game_mechanic = GameMechanic(id=1, mechanic="Grid Movement")
     assert game_mechanic.id == 1
-    assert game_mechanic.mechanic_name == "Grid Movement"
+    assert game_mechanic.mechanic == "Grid Movement"
 
 
 def test_invalid_GameMechanic():
     with pytest.raises(ValidationError):
         GameMechanic() # type: ignore Test if schema rejects empty values.
     with pytest.raises(ValidationError):
-        GameMechanic(id=-1, mechanic_name="Grid Movement") # Test if the id validation works.
+        GameMechanic(id=-1, mechanic="Grid Movement") # Test if the id validation works.
 
 
 # ------------ Testing GameStatistics ------------

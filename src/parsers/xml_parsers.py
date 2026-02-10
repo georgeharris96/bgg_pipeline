@@ -277,7 +277,7 @@ def parse_xml_page_for_game_mechanics(xml_content: str, boardgame_id: int) -> li
         for tag in mechanic_tags:
             tag_value = tag.get("value")
             if isinstance(tag_value, str):
-                game_mechanics.append(GameMechanic(id=boardgame_id, mechanic_name=tag_value))
+                game_mechanics.append(GameMechanic(id=boardgame_id, mechanic=tag_value))
             else:
                 pass
         return game_mechanics

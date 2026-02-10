@@ -116,7 +116,7 @@ class GameMechanic(BaseModel):
         )
     
     id: int
-    mechanic_name: str
+    mechanic: str
 
     @field_validator("id")
     def validate_id(cls, value) -> None:
