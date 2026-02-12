@@ -72,7 +72,7 @@ def extract_description(soup: BeautifulSoup) -> str:
     if description_tag is None:
         raise ValueError("Description tag cannot be found!")
 
-    value = description_tag.get("value")
+    value = description_tag.text
     if isinstance(value, str):
         return value
     else:

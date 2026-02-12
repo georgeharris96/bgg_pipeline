@@ -13,7 +13,7 @@ def test_make_request_without_token():
 
         result = make_request(limiter=mock_limiter, url="http://example.com")
 
-        mock_get.assert_called_once_with("http://example.com")
+        mock_get.assert_called_once_with("http://example.com", headers={}, timeout=30.0)
 
 
 def test_make_request_with_token():
@@ -27,6 +27,7 @@ def test_make_request_with_token():
         mock_get.assert_called_once_with(
             "http://example.com",
             headers={"Authorization": "Bearer my_token"},
+            timeout=30.0,
         )
 
 

@@ -46,7 +46,7 @@ class XMLAPI:
             stats (bool, optional): A flag used to mark your desire to gather the 
                 stats of the boardgame. Defaults to False. 
         """
-        contents = [self.base_url, f"thing?={boardgame_id}"]
+        contents = [self.base_url, f"thing?id={boardgame_id}"]
         if stats:
             contents.append("&stats=1")
 
@@ -63,8 +63,10 @@ class XMLAPI:
         """
         if self.next_request_url != "":
             response = make_request(self.limiter, self.next_request_url, bearer_token=get_bgg_auth())
-            if response.status_code != 200:
-                logger.error(f"The following URL failed: '{self.base_url}'\nwith status code: {response.status_code}")
+            if response is None:
+                logger.error(f"Request failed for URL: '{self.next_request_url}'")
+            elif response.status_code != 200:
+                logger.error(f"The following URL failed: '{self.next_request_url}'\nwith status code: {response.status_code}")
             else:
                 return response.text
         else:

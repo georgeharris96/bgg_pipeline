@@ -35,7 +35,7 @@ class Mechanics(Base):
     __tablename__ = "Mechanics"
 
     id = Column(Integer, ForeignKey("Games.id"), primary_key=True)
-    mechanic = Column(String)
+    mechanic = Column(String, primary_key=True)
 
     def __repr__(self):
         return f"<boardgame of id: {self.id} has the mechanic: {self.mechanic}>"

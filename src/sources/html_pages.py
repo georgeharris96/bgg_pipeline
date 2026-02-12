@@ -44,7 +44,9 @@ class HTMLPages:
         """
         url = f"{self.base_url}/browse/boardgame/page/{page}"
         response = make_request(self.limiter, url)
-        if response.status_code != 200:
+        if response is None:
+            logger.error(f"Request failed for URL: {url}")
+        elif response.status_code != 200:
             logger.error(f"The following URL failed to return status code 200: {url}")
         else:
             return response.text

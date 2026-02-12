@@ -43,8 +43,12 @@ def gather_game_id_names_ranks_from_html_pages() -> list[GameRankCreate]:
             collected_game_ids_names_ranks = []
 
             for page in collected_pages:
-                collected_game_ids_names_ranks.append(parse_html_ranking_page(page))
-            
+                parsed_page = parse_html_ranking_page(page)
+                if parsed_page is not None:
+                    collected_game_ids_names_ranks.append(parsed_page)
+                else:
+                    logger.warning("A page failed to parse, skipping it.")
+
             # bring these together
             collected_game_ids_names_ranks = list(chain.from_iterable(collected_game_ids_names_ranks))
 
@@ -84,11 +88,13 @@ def gather_statistics_from_ids(boardgame_ids: list[int]) -> list[GameStatistics]
 
         else:
             # ... if found, parse the information
-            boardgame_statistics.append(
-                parse_xml_page_for_statistics(
-                    xml_content=xml_page, boardgame_id=id
-                    )
+            stats = parse_xml_page_for_statistics(
+                xml_content=xml_page, boardgame_id=id
             )
+            if stats is not None:
+                boardgame_statistics.append(stats)
+            else:
+                logger.warning(f"Failed to parse statistics for boardgame id: {id}")
             bgg_api.save_xml_file(
                 file_name=f"{id}.xml",
                 xml_content=xml_page,
@@ -138,7 +144,7 @@ def collect_and_store_mechanics(db) -> None:
     Reads saved XML files from disk, extracts game mechanics from each, and stores them in the database.
     """
     logger.info("STARTING TO COLLECT AND STORE GAME MECHANICS")
-    xml_file_names = glob("data/raw_xml/*.xml")
+    xml_file_names = glob("data/raw_xmls/*.xml")
     all_game_mechanics: list[GameMechanic] = []
 
     for file_name in xml_file_names:
@@ -167,7 +173,11 @@ def main_pipeline() -> None:
     with get_db_session() as db:
         game_ranks = collect_and_store_game_ranks(db)
         boardgame_ids = [game.id for game in game_ranks]
+
+    with get_db_session() as db:
         collect_and_store_statistics(db, boardgame_ids)
+
+    with get_db_session() as db:
         collect_and_store_mechanics(db)
     logger.info("THE PIPELINE HAS FINISHED RUNNING")
 
