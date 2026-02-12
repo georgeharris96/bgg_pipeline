@@ -1,6 +1,9 @@
-# BGG Pipeline
-
-A data pipeline that scrapes board game rankings, statistics, and mechanics from [BoardGameGeek](https://boardgamegeek.com) and stores them in a local SQLite database.
+<div align="center">
+<table><tr>
+<td><h1>BGG Pipeline</h1><p>A data pipeline that scrapes board game rankings, statistics, and mechanics from <a href="https://boardgamegeek.com">BoardGameGeek</a> and stores them in a local SQLite database.</p></td>
+<td><img src="https://cf.geekdo-images.com/HZy35cmzmmyV9BarSuk6ug__imagepage/img/FOGhR5OgYhcg-1jdqT5i5W8Xfbg=/fit-in/900x600/filters:no_upscale():strip_icc()/pic7779581.png" alt="BoardGameGeek Logo" width="200"></td>
+</tr></table>
+</div>
 
 ## Overview
 
