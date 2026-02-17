@@ -33,6 +33,7 @@ def gather_game_id_names_ranks_from_html_pages() -> list[GameRankCreate]:
     
     else:
         max_page_number = get_html_last_page_number(page_1)
+        logger.info("FOUND FIRST RANKING PAGE. MOVING ON...")
 
         # Checks if the max page number has been found....
         if max_page_number != None:

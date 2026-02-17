@@ -24,7 +24,7 @@ valid_mock_xml_content = """
         <minplayers value="2" />
         <maxplayers value="4" />
         <minage value="12" />
-        <description value="A strategic board game about building civilizations." />
+        <description>A strategic board game about building civilizations.</description>
         <poll name="suggested_numplayers" title="User Suggested Number of Players" totalvotes="100">
             <results numplayers="1">
                 <result value="Best" numvotes="5" />
@@ -107,9 +107,10 @@ xml_content_with_mechanics = """
 <?xml version="1.0" encoding="utf-8"?>
 <boardgames>
     <boardgame objectid="174430">
-        <boardgamemechanic value="Hand Management" />
-        <boardgamemechanic value="Card Drafting" />
-        <boardgamemechanic value="Variable Player Powers" />
+        <link type="boardgamemechanic" id="2040" value="Hand Management" />
+        <link type="boardgamemechanic" id="2041" value="Card Drafting" />
+        <link type="boardgamemechanic" id="2015" value="Variable Player Powers" />
+        <link type="boardgamecategory" id="1009" value="Abstract Strategy" />
     </boardgame>
 </boardgames>
 """
@@ -119,6 +120,7 @@ xml_content_no_mechanics = """
 <boardgames>
     <boardgame objectid="174430">
         <description value="A game with no mechanics listed." />
+        <link type="boardgamecategory" id="1009" value="Abstract Strategy" />
     </boardgame>
 </boardgames>
 """

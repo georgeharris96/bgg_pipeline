@@ -266,8 +266,7 @@ def parse_xml_page_for_game_mechanics(xml_content: str, boardgame_id: int) -> li
         return None
     
     # Find all the mechanics
-    mechanic_tags = soup.find_all("boardgamemechanic")
-
+    mechanic_tags = soup.find_all("link", {"type": "boardgamemechanic"})
     if mechanic_tags is None:
         logger.warning(f"Boardgame id = {boardgame_id} has no mechanics")
         return None
@@ -279,5 +278,5 @@ def parse_xml_page_for_game_mechanics(xml_content: str, boardgame_id: int) -> li
             if isinstance(tag_value, str):
                 game_mechanics.append(GameMechanic(id=boardgame_id, mechanic=tag_value))
             else:
-                pass
+                logger.error("Failed to create a mechanic object")
         return game_mechanics
