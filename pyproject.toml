@@ -12,14 +12,12 @@ readme = "README.md"
 requires-python = ">=3.13,<3.14"
 dependencies = [
     "pydantic (>=2.12.5,<3.0.0)",
-    "dask (>=2025.12.0,<2026.0.0)",
-    "pytest (>=9.0.2,<10.0.0)",
     "pandas (>=2.3.3,<3.0.0)",
     "httpx (>=0.28.1,<0.29.0)",
-    "apache-airflow (>=3.1.5,<4.0.0)",
     "sqlalchemy (>=2.0.45,<3.0.0)",
     "beautifulsoup4 (>=4.14.3,<5.0.0)",
-    "lxml (>=6.0.2,<7.0.0)"
+    "lxml (>=6.0.2,<7.0.0)",
+    "playwright (>=1.58.0,<2.0.0)"
 ]
 
 
@@ -29,3 +27,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 package-mode = false
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^9.0.2"
+

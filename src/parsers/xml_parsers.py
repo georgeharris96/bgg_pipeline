@@ -1,11 +1,61 @@
 # src/parsers/xml_parsers.py
 import re
 from bs4 import BeautifulSoup
-from src.schemas import GameStatistics
+from schemas import GameStatistics, GameMechanic
 from utils.logging_config import setup_logging
 
 
 logger = setup_logging()
+
+
+def _extract_int_value(soup: BeautifulSoup, tag_name: str, display_name: str) -> int:
+    """Extracts an integer value from an XML tag's 'value' attribute.
+
+    Args:
+        soup: The parsed XML content.
+        tag_name: The name of the XML tag to find.
+        display_name: A human-readable name for error messages.
+
+    Returns:
+        int: The extracted integer value.
+
+    Raises:
+        ValueError: If the tag is not found or the value is not a valid integer.
+    """
+    tag = soup.find(tag_name)
+    if tag is None:
+        raise ValueError(f"{display_name} tag cannot be found!")
+
+    value = tag.get("value")
+    if isinstance(value, str) and re.match(r"^[0-9]+$", value):
+        return int(value)
+    else:
+        raise ValueError(f"{display_name} value is invalid: {value}")
+
+
+def _extract_float_value(soup: BeautifulSoup, tag_name: str, display_name: str) -> float:
+    """Extracts a float value from an XML tag's 'value' attribute.
+
+    Args:
+        soup: The parsed XML content.
+        tag_name: The name of the XML tag to find.
+        display_name: A human-readable name for error messages.
+
+    Returns:
+        float: The extracted float value.
+
+    Raises:
+        ValueError: If the tag is not found or the value is not a valid number.
+    """
+    tag = soup.find(tag_name)
+    if tag is None:
+        raise ValueError(f"{display_name} tag cannot be found!")
+
+    value = tag.get("value")
+    if isinstance(value, str) and re.match(r"^[0-9]+(\.[0-9]+)?$", value):
+        return float(value)
+    else:
+        raise ValueError(f"{display_name} value is invalid: {value}")
 
 
 def extract_description(soup: BeautifulSoup) -> str:
@@ -22,7 +72,7 @@ def extract_description(soup: BeautifulSoup) -> str:
     if description_tag is None:
         raise ValueError("Description tag cannot be found!")
 
-    value = description_tag.get("value")
+    value = description_tag.text
     if isinstance(value, str):
         return value
     else:
@@ -31,69 +81,48 @@ def extract_description(soup: BeautifulSoup) -> str:
 
 
 def extract_year_published(soup: BeautifulSoup) -> int:
-    """
-    Extracts the year published from the parsed XML/HTML content.
+    """Extracts the year published from the parsed XML content.
 
     Args:
-        soup (BeautifulSoup): The parsed XML/HTML content from which to extract the year published.
+        soup: The parsed XML content.
 
     Returns:
-        int: The year published, or None if not found or if there's an error in extraction.
+        int: The year published.
+
+    Raises:
+        ValueError: If the tag is not found or the value is not a valid integer.
     """
-    year_published_tag = soup.find("yearpublished")
-
-    if year_published_tag is None:
-        raise ValueError("Year Published tag cannot be found!")
-
-    value = year_published_tag.get("value")
-    if isinstance(value, str) and bool(re.match(r"^[0-9]+$", value)):
-        return int(value)
-    else:
-        raise ValueError(f"Year Published value is invalid: {value}")
+    return _extract_int_value(soup, "yearpublished", "Year Published")
 
 
 def extract_min_players(soup: BeautifulSoup) -> int:
-    """
-    Extracts the minimum number of players from the parsed XML/HTML content.
+    """Extracts the minimum number of players from the parsed XML content.
 
     Args:
-        soup (BeautifulSoup): The parsed XML/HTML content from which to extract the minimum number of players.
+        soup: The parsed XML content.
 
     Returns:
-        int: The minimum number of players, or None if not found or if there's an error in extraction.
+        int: The minimum number of players.
+
+    Raises:
+        ValueError: If the tag is not found or the value is not a valid integer.
     """
-    min_players_tag = soup.find("minplayers")
-
-    if min_players_tag is None:
-        raise ValueError("Min Players tag cannot be found!")
-
-    value = min_players_tag.get("value")
-    if isinstance(value, str) and bool(re.match(r"^[0-9]+$", value)):
-        return int(value)
-    else:
-        raise ValueError(f"Min Players value is invalid: {value}")
+    return _extract_int_value(soup, "minplayers", "Min Players")
 
 
 def extract_max_players(soup: BeautifulSoup) -> int:
-    """
-    Extracts the maximum number of players from the parsed XML/HTML content.
+    """Extracts the maximum number of players from the parsed XML content.
 
     Args:
-        soup (BeautifulSoup): The parsed XML/HTML content from which to extract the maximum number of players.
+        soup: The parsed XML content.
 
     Returns:
-        int: The maximum number of players, or None if not found or if there's an error in extraction.
+        int: The maximum number of players.
+
+    Raises:
+        ValueError: If the tag is not found or the value is not a valid integer.
     """
-    max_players_tag = soup.find("maxplayers")
-
-    if max_players_tag is None:
-        raise ValueError("Max Players tag cannot be found!")
-
-    value = max_players_tag.get("value")
-    if isinstance(value, str) and bool(re.match(r"^[0-9]+$", value)):
-        return int(value)
-    else:
-        raise ValueError(f"Max Players value is invalid: {value}")
+    return _extract_int_value(soup, "maxplayers", "Max Players")
 
 
 def extract_suggested_num_player(soup: BeautifulSoup) -> int:
@@ -144,72 +173,51 @@ def extract_suggested_num_player(soup: BeautifulSoup) -> int:
         raise ValueError(f"Invalid best_num_players value: {best_num_players}")
 
 def extract_min_age(soup: BeautifulSoup) -> int:
-    """
-    Extracts the minimum age recommendation from the parsed XML/HTML content.
+    """Extracts the minimum age recommendation from the parsed XML content.
 
     Args:
-        soup (BeautifulSoup): The parsed XML/HTML content from which to extract the minimum age.
+        soup: The parsed XML content.
 
     Returns:
-        int: The minimum age recommendation, or None if not found or if there's an error in extraction.
+        int: The minimum age recommendation.
+
+    Raises:
+        ValueError: If the tag is not found or the value is not a valid integer.
     """
-    min_age_tag = soup.find("minage")
+    return _extract_int_value(soup, "minage", "Min Age")
 
-    if min_age_tag is None:
-        raise ValueError("Min Age tag cannot be found!")
-
-    value = min_age_tag.get("value")
-    if isinstance(value, str) and re.match(r"^[0-9]+$", value):
-        return int(value)
-    else:
-        raise ValueError(f"Min Age value is invalid: {value}")
-    
 
 def extract_average_rating(soup: BeautifulSoup) -> float:
-    """
-    Extracts the average rating from the parsed XML/HTML content.
+    """Extracts the average rating from the parsed XML content.
 
     Args:
-        soup (BeautifulSoup): The parsed XML/HTML content from which to extract the average rating.
+        soup: The parsed XML content.
 
     Returns:
-        float: The average rating, or None if not found or if there's an error in extraction.
+        float: The average rating.
+
+    Raises:
+        ValueError: If the tag is not found or the value is not a valid number.
     """
-    average_rating_tag = soup.find("average")
-
-    if average_rating_tag is None:
-        raise ValueError("Average Rating tag cannot be found!")
-
-    value = average_rating_tag.get("value")
-    if isinstance(value, str) and re.match(r"^[0-9]+(\.[0-9]+)?$", value):
-        return float(value)
-    else:
-        raise ValueError(f"Average Rating value is invalid: {value}")
+    return _extract_float_value(soup, "average", "Average Rating")
 
 
 def extract_average_weight(soup: BeautifulSoup) -> float:
-    """
-    Extracts the average weight from the parsed XML/HTML content.
+    """Extracts the average weight from the parsed XML content.
 
     Args:
-        soup (BeautifulSoup): The parsed XML/HTML content from which to extract the average weight.
+        soup: The parsed XML content.
 
     Returns:
-        float: The average weight, or None if not found or if there's an error in extraction.
+        float: The average weight.
+
+    Raises:
+        ValueError: If the tag is not found or the value is not a valid number.
     """
-    average_weight_tag = soup.find("averageweight")
-
-    if average_weight_tag is None:
-        raise ValueError("Average Weight tag cannot be found!")
-
-    value = average_weight_tag.get("value")
-    if isinstance(value, str) and re.match(r"^[0-9]+(\.[0-9]+)?$", value):
-        return float(value)
-    else:
-        raise ValueError(f"Average Weight value is invalid: {value}")
+    return _extract_float_value(soup, "averageweight", "Average Weight")
 
 
-def parse_xml_page(xml_content: str, boardgame_id: int) -> GameStatistics | None:
+def parse_xml_page_for_statistics(xml_content: str, boardgame_id: int) -> GameStatistics | None:
     """
     Parses the XML content to extract board game statistics.
 
@@ -248,5 +256,27 @@ def parse_xml_page(xml_content: str, boardgame_id: int) -> GameStatistics | None
     except Exception as e:
         logger.error(f"Unexpected error for boardgame id = {boardgame_id}: {e}")
         return None
+
+
+def parse_xml_page_for_game_mechanics(xml_content: str, boardgame_id: int) -> list[GameMechanic] | None:
+    try:
+        soup = BeautifulSoup(xml_content, "xml")
+    except Exception as e:
+        logger.error(f"Failed to parse XML content for boardgame id = {boardgame_id}: {e}")
+        return None
     
+    # Find all the mechanics
+    mechanic_tags = soup.find_all("link", {"type": "boardgamemechanic"})
+    if mechanic_tags is None:
+        logger.warning(f"Boardgame id = {boardgame_id} has no mechanics")
+        return None
     
+    else:
+        game_mechanics = []
+        for tag in mechanic_tags:
+            tag_value = tag.get("value")
+            if isinstance(tag_value, str):
+                game_mechanics.append(GameMechanic(id=boardgame_id, mechanic=tag_value))
+            else:
+                logger.error("Failed to create a mechanic object")
+        return game_mechanics

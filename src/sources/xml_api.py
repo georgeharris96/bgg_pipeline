@@ -3,6 +3,7 @@ import httpx
 from utils.logging_config import setup_logging
 from utils.throttler import RateLimiter
 from utils.api_auth import get_bgg_auth
+from utils.make_requests import make_request
 
 
 logger = setup_logging()
@@ -45,7 +46,7 @@ class XMLAPI:
             stats (bool, optional): A flag used to mark your desire to gather the 
                 stats of the boardgame. Defaults to False. 
         """
-        contents = [self.base_url, f"thing?={boardgame_id}"]
+        contents = [self.base_url, f"thing?id={boardgame_id}"]
         if stats:
             contents.append("&stats=1")
 
@@ -61,17 +62,15 @@ class XMLAPI:
                 create_request method it will fail.
         """
         if self.next_request_url != "":
-            headers = {
-                "Authorization": f"Bearer {get_bgg_auth()}"
-            }
-            self.limiter.wait()
-            response = httpx.get(self.next_request_url, headers=headers)
-            if response.status_code != 200:
-                logger.error(f"The following URL failed: '{self.base_url}'\nwith status code: {response.status_code}")
+            response = make_request(self.limiter, self.next_request_url, bearer_token=get_bgg_auth())
+            if response is None:
+                logger.error(f"Request failed for URL: '{self.next_request_url}'")
+            elif response.status_code != 200:
+                logger.error(f"The following URL failed: '{self.next_request_url}'\nwith status code: {response.status_code}")
             else:
                 return response.text
         else:
-            raise ValueError("Please create a request before")
+            raise ValueError("Please create a request before trying to collect it.")
         
 
     @staticmethod

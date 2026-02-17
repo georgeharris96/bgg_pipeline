@@ -18,7 +18,7 @@ class Game(Base):
 class Statistics(Base):
     __tablename__ = "Statistics"
 
-    id = Column(Integer, ForeignKey("Game.id"), primary_key=True)
+    id = Column(Integer, ForeignKey("Games.id"), primary_key=True)
     description = Column(String)
     year_published = Column(Integer)
     min_players = Column(Integer)
@@ -29,5 +29,13 @@ class Statistics(Base):
     average_weight = Column(Float)
 
     def __repr__(self):
-        return f"<Statistics(id={self.id}, description='{self.description}', year_published={self.year_published}, min_players={self.min_players}, max_players={self.max_players}, suggested_num_player={self.suggested_num_player}, min_age={self.min_age}, average_rating={self.average_rating}, average_weight={self.average_weight})>"
+        return f"<Statistics object for boardgame of id {self.id}>"
 
+class Mechanics(Base):
+    __tablename__ = "Mechanics"
+
+    id = Column(Integer, ForeignKey("Games.id"), primary_key=True)
+    mechanic = Column(String, primary_key=True)
+
+    def __repr__(self):
+        return f"<boardgame of id: {self.id} has the mechanic: {self.mechanic}>"

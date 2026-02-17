@@ -78,7 +78,7 @@ def parse_html_ranking_page(html_content: str) -> list[GameRankCreate] | None:
         else:
             raise ValueError("HTML content failed to parse.")
     except ValueError as e:
-        logger.error("HTML content failed to parse with error: \n {e}")
+        logger.error(f"HTML content failed to parse with error: \n {e}")
 
 
 def get_html_last_page_number(html_content:str) -> int | None:

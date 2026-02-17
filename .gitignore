@@ -148,4 +148,8 @@ bgg_auth.txt
 # other files
 **/.DS_Store
 
+# IDE files
+.vscode
+.claude
+
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Python
