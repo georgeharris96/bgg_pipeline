@@ -20,6 +20,7 @@ class XMLAPI:
             base_url: str = "https://boardgamegeek.com/xmlapi2/",
             user_agent: str = "xml_api_scraper/0.1",
             delay_s: float = 2.0,
+            jitter_s: float = 0.0,
             ) -> None:
         """Initialises the XMLAPI fetcher.
 
@@ -30,10 +31,11 @@ class XMLAPI:
                 Defaults to "xml_api_scraper/0.1",
             delay_s (float, optional): The delay in seconds between consecutive requests
                 to avoid overloading the server. Defaults to 2.0
+            jitter_s (float, optional): Adds a random delay between requests
         """
         self.base_url = base_url
         self.user_agent = user_agent
-        self.limiter = RateLimiter(delay_s=delay_s)
+        self.limiter = RateLimiter(delay_s=delay_s, jitter_s=jitter_s)
         self.next_request_url = ""
 
     

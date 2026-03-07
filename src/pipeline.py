@@ -22,7 +22,10 @@ def gather_game_id_names_ranks_from_html_pages() -> list[GameRankCreate]:
     Returns:
         collected_game_ids_names_ranks (list[GameRankCreate]): Returns a list of GameRankCreate objects, which is a pydantic validator.
     """
-    html_pages = HTMLPages()
+    html_pages = HTMLPages(
+        delay_s=5,
+        jitter_s=3
+    )
     page_1 = html_pages.fetch_ranking_page(page=1)
 
     # Checks if page one has been found and if not... 
@@ -69,7 +72,10 @@ def gather_statistics_from_ids(boardgame_ids: list[int]) -> list[GameStatistics]
     Returns:
         boardgame_statistics (list[GameStatistics]): Returns a list of GameStatistic objects, which is a pydantic validator.
     """
-    bgg_api = XMLAPI()
+    bgg_api = XMLAPI(
+        delay_s=5,
+        jitter_s=3
+        )
     boardgame_statistics = []
 
     for id in boardgame_ids:

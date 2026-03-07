@@ -74,12 +74,15 @@ class HTMLPages:
             self.limiter.wait()
             assert context is not None
             browser_page = context.new_page()
+            logger.info(f"Requesting URL: {url}")
             response = browser_page.goto(url, wait_until="networkidle")
 
             if response is None:
                 logger.error(f"Request failed for URL: {url}")
                 return None
-            elif response.status != 200:
+
+            logger.info(f"Landing URL: {response.url} | Status: {response.status}")
+            if response.status != 200:
                 logger.error(f"The following URL ({url}) returned with a {response.status} status code")
                 return None
             else:

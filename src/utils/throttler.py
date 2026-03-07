@@ -1,6 +1,6 @@
 # src/utils/throttler.py
 import time
-
+import random
 
 class RateLimiter:
     """
@@ -24,5 +24,5 @@ class RateLimiter:
         elapsed = now - self._last_ts
         needed = self.delay_s - elapsed
         if needed > 0:
-            time.sleep(needed + (self.jitter_s * 0.5)) # tiny fixed jitter if set
+            time.sleep(needed + random.uniform(-self.jitter_s, self.jitter_s)) # random jitter
         self._last_ts = time.time()
