@@ -1,6 +1,6 @@
 <div align="center">
 <table><tr>
-<td><h1>BGG Pipeline</h1><p>A data pipeline that scrapes board game rankings, statistics, and mechanics from <a href="https://boardgamegeek.com">BoardGameGeek</a> and stores them in a local SQLite database.</p></td>
+<td><h1>BGG Pipeline</h1><p>A data pipeline that scrapes the top 1000 board game rankings, statistics, and mechanics from <a href="https://boardgamegeek.com">BoardGameGeek</a> and stores them in a local SQLite database.</p></td>
 <td><img src="https://cf.geekdo-images.com/HZy35cmzmmyV9BarSuk6ug__imagepage/img/FOGhR5OgYhcg-1jdqT5i5W8Xfbg=/fit-in/900x600/filters:no_upscale():strip_icc()/pic7779581.png" alt="BoardGameGeek Logo" width="200"></td>
 </tr></table>
 </div>
@@ -84,3 +84,10 @@ The pipeline will:
 ```bash
 poetry run pytest
 ```
+
+## Todo
+
+- [ ] Expand collection to all games
+- [ ] Containerise and automate the upload process
+- [ ] Collect BGG anonymised reviews
+- [ ] Add Apache Airflow for monitoring
