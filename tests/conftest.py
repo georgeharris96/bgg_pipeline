@@ -1,6 +1,7 @@
 import sys
 import pytest
 from pathlib import Path
+from unittest.mock import patch
 
 # Add the src directory to the Python path
 src_path = str(Path(__file__).parent.parent / "src")
@@ -9,6 +10,12 @@ sys.path.append(src_path)
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from src.models import Base
+
+
+@pytest.fixture(autouse=True)
+def patch_init_db():
+    with patch("src.pipeline.init_db"):
+        yield
 
 
 @pytest.fixture

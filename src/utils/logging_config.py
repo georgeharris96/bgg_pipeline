@@ -2,13 +2,16 @@
 import logging
 
 def setup_logging():
+    handlers = [logging.StreamHandler()]
+    try:
+        handlers.append(logging.FileHandler("app.log"))
+    except OSError:
+        pass
+
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        handlers=[
-            logging.FileHandler("app.log"),
-            logging.StreamHandler()
-        ]
+        handlers=handlers,
     )
     
     # Set the logging level for httpx to WARNING

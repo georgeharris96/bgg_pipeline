@@ -16,8 +16,10 @@ engine = create_engine(DATABASE_URL)
 # Create a configured Session class
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Create all tables defined in your models.
-Base.metadata.create_all(bind=engine)
+
+def init_db() -> None:
+    """Creates all database tables. Call this explicitly before running the pipeline."""
+    Base.metadata.create_all(bind=engine)
 
 
 def bulk_import_into_database(database_session: Session, table: type[Base], data_to_import: Sequence[BaseModel]) -> None:

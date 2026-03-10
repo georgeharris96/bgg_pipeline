@@ -1,5 +1,5 @@
 # src/pipeline.py
-from database import bulk_import_into_database, get_db_session
+from database import bulk_import_into_database, get_db_session, init_db
 from models import Game, Statistics, Mechanics
 from schemas import GameRankCreate, GameStatistics, GameMechanic
 from sources.html_pages import HTMLPages
@@ -177,6 +177,7 @@ def main_pipeline() -> None:
 
     Outputs a sqlite database in the data/ directory.
     """
+    init_db()
     with get_db_session() as db:
         game_ranks = collect_and_store_game_ranks(db)
         boardgame_ids = [game.id for game in game_ranks]
